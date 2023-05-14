@@ -1,0 +1,41 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <h2 class="text-center mt-5 mb-3">Register</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" class="form-control" required id="username">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" class="form-control" required id="email">
+                </div>
+                <div class="form-group">
+                    <label for="designation">Designation</label>
+                    <input type="text" name="designation" class="form-control" required id="designation">
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" name="age" class="form-control" required id="age">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <input type="text" name="gender" class="form-control" required id="gender">
+                </div>
+                <div class="form-group">
+                    <label for="password1">Password</label>
+                    <input type="password" name="password1" class="form-control" required id="password1">
+                </div>
+                <div class="form-group">
+                    <label for="password2">Confirm Password</label>
+                    <input type="password" name="password2" class="form-control" required id="password2">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

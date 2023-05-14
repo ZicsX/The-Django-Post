@@ -1,0 +1,125 @@
+{% extends 'blog/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-9">
+        <h1>Latest Blogs</h1>
+        {% for blog in page_obj %}
+        <div class="mb-4">
+            <h2><a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h2>
+            <p>{{ blog.content|safe|truncatechars_html:100 }}</p>
+            <p>Author: {{ blog.author }}</p>
+        </div>
+        {% endfor %}
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        {% if user.is_authenticated and user.is_staff %}
+            <h2>All Users</h2>
+            <ul>
+                {% for user in all_users %}
+                    <li><a href="#" class="user-link" data-username="{{ user.username }}">{{ user.username }}</a></li>
+                {% endfor %}
+            </ul>
+            <div id="user-info-box" style="display: none;">
+                <button id="close-user-info">Close</button>
+            </div>    
+        {% endif %}
+        {% if user.is_authenticated %}
+            <h2>My Blogs</h2>
+            <a href="{% url 'blog_new' %}" class="btn btn-primary mb-3">Create Blog</a>
+            {% if user_blogs %}
+                {% for blog in user_blogs %}
+                    <div class="mb-4">
+                        <h3><a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h3>
+                    </div>
+                {% empty %}
+                    <p>You have not created any blogs yet.</p>
+                {% endfor %}
+            {% endif %}
+            
+        {% endif %}
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Popup Modal -->
+    <div class="modal" id="user-info-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">User Information</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Username:</strong> <span id="username"></span></p>
+                    <p><strong>Email:</strong> <span id="email"></span></p>
+                    <p><strong>Designation:</strong> <span id="designation"></span></p>
+                    <p><strong>Age:</strong> <span id="age"></span></p>
+                    <p><strong>Gender:</strong> <span id="gender"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // When a user link is clicked
+        $('.user-link').on('click', function(event) {
+            event.preventDefault();
+            var username = $(this).data('username');
+    
+            // Make an AJAX request to fetch the user information
+            $.ajax({
+                url: '/users/info/' + username + '/',
+                method: 'GET',
+                success: function(response) {
+                    // Display the user information in the user-info-box
+                    $('#user-info-box').html(`
+                        <h5>User Information</h5>
+                        <p>Username: ${response.username}</p>
+                        <p>Email: ${response.email}</p>
+                        <p>Designation: ${response.designation}</p>
+                        <p>Age: ${response.age}</p>
+                        <p>Gender: ${response.gender}</p>
+                        <button id="close-user-info">Close</button>
+                    `);
+                    $('#user-info-box').show(); // Show the user-info-box
+    
+                    // Close button click event handler
+                    $('#close-user-info').on('click', function() {
+                        $('#user-info-box').hide(); // Hide the user-info-box when close button is clicked
+                    });
+                },
+                error: function() {
+                    alert('Error occurred while fetching user information.');
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

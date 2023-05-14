@@ -1,0 +1,17 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">{{ blog.title }}</h1>
+        <h6 class="card-subtitle mb-2 text-muted">Author: {{ blog.author }}</h6>
+        <p class="card-text">{{ blog.content|safe }}</p>
+        <p class="card-text"><small class="text-muted">Date Posted: {{ blog.date_posted }}</small></p>
+
+        {% if user.is_authenticated and blog.author == user %}
+            <a href="{% url 'blog_edit' blog.id %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'blog_delete' blog.id %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
